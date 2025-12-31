@@ -1,0 +1,2419 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title> ZED</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-papM6UZYcH+ow...==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="icon" type="image/png" href="img/ZED-05.jpg">
+
+  <style>
+/* =================== عام =================== */
+* {
+  box-sizing: border-box;
+  scroll-behavior: smooth  ;
+
+}
+/* Toast Notification ===================== */
+.toast {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  background: #1a1a1a;
+  color: #fff;
+  padding: 14px 18px;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  font-size: 15px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease;
+  z-index: 2000;
+  border-right: 5px solid #9F2828;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast.success {
+  border-color: #28a745;
+}
+
+.toast.error {
+  border-color: #dc3545;
+}
+
+body {
+  margin: 0;
+  font-family: "Cairo", sans-serif;
+  background: #000;
+  color: #fff;
+
+}
+/* =================== الهيدر =================== */
+header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: #000000;
+  box-shadow: 0 2px 5px rgba(159,40,40,0.4);
+}
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  color: #fff;
+}
+
+.navbar .logo a {
+  color: #9F2828;
+  font-size: 24px;
+  font-weight: bold;
+  text-decoration: none;
+  display: flex;
+}
+
+.logo .letter {
+  display: inline-block;
+  position: relative;
+  animation: letterExplode 5s infinite ease-in-out;
+}
+
+/* نضيف تأخير لكل حرف عشان يبان انفجار متتابع */
+.logo .letter:nth-child(1) { animation-delay: 0s; }
+.logo .letter:nth-child(2) { animation-delay: 0.2s; }
+.logo .letter:nth-child(3) { animation-delay: 0.4s; }
+
+/* الانفجار */
+@keyframes letterExplode {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+    color: #9F2828;
+  }
+  10% {
+    transform: scale(1.5) rotate(10deg);
+    opacity: 0.7;
+    color: #FF0000;
+  }
+  20% {
+    transform: scale(0.8) rotate(-10deg);
+    opacity: 0;
+  }
+  30% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+    color: #9F2828;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    color: #9F2828;
+  }
+}
+
+@keyframes logoGlow {
+  0% {
+    text-shadow: 0 0 0 #9F2828;
+  }
+  50% {
+    text-shadow: 0 0 12px #9F2828;
+  }
+  100% {
+    text-shadow: 0 0 0 #9F2828;
+  }
+}
+
+
+.navbar .nav-links {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+}
+.navbar .nav-links li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  transition: color 0.3s;
+}
+.navbar .nav-links li a:hover {
+  color: #9F2828;
+}
+.navbar .user-actions {
+  display: flex;
+  gap: 15px;
+}
+.navbar .user-actions a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background 0.3s, color 0.3s;
+}
+.navbar .user-actions a:hover {
+  background: #9F2828;
+  color: #fff;
+}
+/* =================== البحث =================== */
+
+.search-bar {
+  margin: 0 20px;
+  display: flex;
+  align-items: center;
+}
+.search-bar input {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid #9F2828;
+  outline: none;
+  background: #000;
+  color: #fff;
+  
+}
+.search-bar button {
+  margin-left: 7px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background: #9F2828;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.search-bar button:hover {
+  background: #ff4d4d;
+}
+/* =================== موبايل مينو =================== */
+.menu-toggle {
+  display: none;
+  font-size: 28px;
+  cursor: pointer;
+}
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: left 0.3s;
+  z-index: 2000;
+}
+.mobile-menu.active { left: 0; }
+.mobile-menu ul {
+  list-style: none;
+  text-align: center;
+  padding: 0;
+}
+.mobile-menu ul li { margin: 20px 0; }
+.mobile-menu ul li a {
+  color: #fff;
+  font-size: 24px;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.mobile-menu ul li a:hover { color: #9F2828; }
+.close-menu {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+/* =================== Hero =================== */
+
+.hero {
+  margin-top: 80px;
+  width: 100%;
+  height: 90vh;
+  overflow: hidden;
+    box-shadow: 0 20px 50px rgba(159,40,40,0.7);
+}
+.hero img {
+  width: 100%;
+  height: 80vh;
+}
+.hero-phone{
+  display: none;
+}
+
+/* في الشاشات الصغيرة (مثل الموبايل) */
+@media (max-width: 768px) {
+
+.hero{
+  display: none;
+}
+.hero-content h1 span{
+  color: #9F2828;
+  font-size: 60px;
+  filter: drop-shadow(0 0 20px #9F2828);
+
+
+}
+.hero-content h1{
+  font-size: 35px;
+  font-weight: 900;
+}
+
+.floating-circles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.circle {
+  position: absolute;
+  bottom: -150px;
+  border-radius: 50%;
+
+  /* أحمر نقي */
+  background: red;
+
+  /* لمسة نار خفيفة */
+  box-shadow: 
+    0 0 20px red,
+    0 0 40px rgba(255, 0, 0, 0.8);
+
+  /* مفيش opacity */
+  filter: blur(1px);
+
+  animation: floatUp linear infinite;
+}
+
+/* الحركة */
+@keyframes floatUp {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(var(--drift)) translateY(-50vh);
+  }
+  100% {
+    transform: translateX(calc(var(--drift) * -1)) translateY(-120vh);
+  }
+}
+
+
+.hero-phone {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(180deg, #0f0f0f, #000);
+  padding: 40px 15px;
+  box-shadow: 0 15px 40px rgba(179, 47, 87, 0.5);
+}
+
+.hero-content {
+  text-align: center;
+  color: #fff;
+  width: 100%;
+  max-width: 360px;
+}
+
+/* الصورة */
+.hero-img {
+  width: 320px;
+  height: 320px;
+  object-fit: cover;
+  margin-top: 25px;
+  filter: drop-shadow(0 10px 25px rgba(252, 103, 54, 0.5));
+  margin-bottom: 0;
+  transition: .4s ease;
+}
+.hero-img:hover{
+  filter: drop-shadow(0 10px 65px rgba(252, 103, 54, 0.5));
+transform: scale(1.1);
+
+}
+
+/* الاسم */
+.hero-name {
+    font-family: "Cairo", sans-serif;
+  font-size: 36px;
+margin-top: 0px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #fff;
+}
+
+/* الواتساب */
+.hero-whatsapp a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  display: inline-block;
+  margin-bottom: 25px;
+}
+
+/* الزرار */
+.hero-btnn {
+  display: inline-block;
+  padding: 14px 36px;
+  background: #9F2828;
+  color: #fff;
+  border-radius: 40px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 16px;
+  box-shadow: 0 8px 25px #9F2828;;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hero-btnn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 12px 35px #ff0000;
+  background: #ff0000;
+
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-phone {
+  position: relative;
+}
+
+.hero-whatsapp a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+font-size: 25px;
+  text-decoration: none;
+}
+
+.hero-whatsapp i {
+  font-size: 40px;
+  color: #9F2828;
+  filter: drop-shadow(0 10px 25px rgba(252, 103, 54, 0.5));
+
+}
+
+
+/* ظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظ */
+
+.hero-btn:hover {
+  background: #ff845b;
+  transform: scale(1.05);
+}
+
+}
+.hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.section-products {
+  padding: 0px 20px 50px;
+  text-align: center;
+}
+
+
+
+
+/* =================== سلايدر =================== */
+.slider {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 30px auto;
+  overflow: hidden;
+}
+
+.slides-container {
+  display: flex;
+  transition: transform 0.6s ease-in-out;
+}
+
+.slide {
+  flex: 0 0 25%; /* 4 صور في الصف */
+  box-sizing: border-box;
+  padding: 10px;
+  text-align: center;
+}
+
+.slide img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.slide h3 {
+  font-size: 18px;
+  margin: 5px 0;
+}
+
+.slide p {
+  font-size: 16px;
+  color: #9f2828;
+}
+
+.prev-slide, .next-slide {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(159,40,40,0.8);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 24px;
+  z-index: 5;
+}
+
+.prev-slide { left: 10px; }
+.next-slide { right: 10px; }
+
+.prev-slide:hover, .next-slide:hover {
+  background: rgba(159,40,40,1);
+}
+
+/* موبايل: خليها صورتين بس */
+@media (max-width: 768px) {
+  .slide {
+    flex: 0 0 50%;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =================== قسم المنتجات =================== */
+.products-container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+.product-card {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 15px;
+  width: 280px;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 0px 20px rgba(218, 13, 13, 0.3);
+  transition: transform 0.4s ease;
+}
+.product-card:hover {
+  transform: translateY(-18px);    }
+
+.product-card img {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+.product-card h3 { font-size: 20px; margin-bottom: 5px; color: #9F2828; }
+.product-card .price { color: #fff; font-weight: bold; margin-bottom: 10px; }
+.product-card .buy-btn 
+
+{
+  padding: 10px 15px;
+  background: #9F2828;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.product-card .buy-btn
+
+:hover { background: #ff4d4d; }
+@media (max-width: 768px) {
+  .navbar .nav-links, .navbar .user-actions { display: none; }
+  .menu-toggle { display: block; }
+}
+
+
+
+
+/* =================== قسم العروض =================== */
+
+#best-sellers {
+  padding: 80px 20px;
+  background: #111;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 20px 20px rgba(218, 13, 13, 0.2);
+
+}
+
+#best-sellers h2 {
+  font-size: 32px;
+  color: #ff4040;
+  margin-bottom: 30px;
+}
+
+#best-sellers .products-container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+#best-sellers .product-card {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 15px;
+  width: 250px;
+  box-shadow: 0 2px 10px rgba(159,40,40,0.2);
+  text-align: center;
+}
+
+#best-sellers .product-card img {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+#best-sellers .product-card h3 {
+  font-size: 20px;
+  margin-bottom: 5px;
+  color: #9F2828;
+}
+
+#best-sellers .product-card .price {
+  color: #fff;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+#best-sellers .product-card .buy-btn
+
+{
+  padding: 10px 15px;
+  background: #9F2828;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#colors-btn a{
+  text-decoration: none;
+}
+.colors-btn{
+  padding: 3px 15px;
+  background: #9F2828;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+
+}
+
+#best-sellers .product-card .buy-btn
+,.colors-btn
+
+:hover {
+  background: #ff4d4d;
+}
+
+/* ريسبونسيف */
+@media (max-width: 768px) {
+  #best-sellers .product-card {
+    width: 45%;
+    margin-bottom: 20px;
+  }
+}
+
+
+
+
+
+.offers {
+  padding: 60px 20px;
+  background: #111;
+  color: #fff;
+  text-align: center;
+  font-family: "Cairo", sans-serif;
+}
+
+.offers h2 {
+  color: #ff4040;
+  font-size: 28px;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.offers h2::after {
+  content: "";
+  display: block;
+  width: 80px;
+  height: 3px;
+  background: #ff4040;
+  margin: 10px auto 0;
+}
+
+.offers-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.offer-card {
+  background: #1a1a1a;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  transition: 0.4s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.offer-card:hover {
+  transform: translateY(-8px);
+}
+
+.offer-card img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  transition: 0.4s;
+}
+
+.offer-card:hover img {
+  filter: brightness(1.1);
+}
+
+.offer-info {
+  padding: 15px;
+}
+
+.offer-info h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.offer-info p {
+  font-size: 16px;
+  color: #ccc;
+  margin-bottom: 12px;
+}
+
+.offer-info del {
+  color: #777;
+  margin-right: 5px;
+}
+
+.offer-info .new-price {
+  color: #ff4040;
+  font-weight: bold;
+}
+
+.buy-btn {
+  background: #ff4040;
+  border: none;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 15px;
+}
+
+.buy-btn:hover
+ {
+  background: #e63636;
+}
+
+.discount {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #ff4040;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .offer-card img {
+    height: 220px;
+  }
+  .offers h2 {
+    font-size: 24px;
+  }
+}
+
+/* اراء العملاء  ===============================================*/
+.reviews-section {
+  padding: 40px 20px;
+  background: #000;
+  color: #fff;
+  text-align: center;
+}
+
+.reviews-section h2 {
+  margin-bottom: 30px;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #9F2828;
+}
+
+.carousel-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  overflow: hidden;
+}
+
+.review-card {
+  background: #fff;
+  color: #000;
+  padding: 20px;
+  border-radius: 10px;
+  min-width: 250px;
+  flex: 0 0 auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-align: center;
+  transition: transform 0.5s;
+}
+
+.review-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.avatar {
+  font-size: 50px;
+  color: #9F2828;
+  margin-bottom: 5px;
+}
+
+.review-card h3 {
+  margin: 0 0 5px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.review-card p {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.stars {
+  color: #FFD700;
+  font-size: 16px;
+}
+
+.carousel-buttons {
+  margin-top: 20px;
+}
+
+.carousel-buttons button {
+  background: #9F2828;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  margin: 0 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+@media (max-width: 1024px) {
+  .review-card {
+    min-width: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .review-card {
+    min-width: 90%;
+  }
+}
+
+
+/* =================== قسم التواصل =================== */
+.contact {
+  padding: 80px 20px;
+  background: #111;
+  color: #fff;
+  text-align: center;
+}
+
+.contact h2 {
+  font-size: 32px;
+  color: #9F2828;
+  margin-bottom: 10px;
+}
+
+.contact p {
+  font-size: 18px;
+  margin-bottom: 30px;
+}
+
+.contact-container {
+  max-width: 1000px;
+  margin: auto;
+}
+
+.contact-content {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.contact form {
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.contact form input,
+.contact form textarea {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #9F2828;
+  background: #000;
+  color: #fff;
+  font-size: 16px;
+  outline: none;
+}
+
+.contact form button {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #9F2828;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.contact form button:hover {
+  background: #ff4d4d;
+}
+
+.contact-info {
+  flex: 1;
+  min-width: 280px;
+  text-align: left;
+}
+
+.contact-info h3 {
+  margin-bottom: 15px;
+  color: #9F2828;
+}
+
+.contact-info p {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+/* ريسبونسيف */
+@media (max-width: 768px) {
+  .contact-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .contact-info {
+    text-align: center;
+  }
+}
+
+
+
+
+
+/* =================== قسم الفوتر =================== */
+.footer {
+  background: #0b0b0b;
+  color: #fff;
+  padding: 60px 20px 20px;
+  font-family: "Cairo", sans-serif;
+}
+
+.footer-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.footer-col h3 {
+  color: #ff4040;
+  margin-bottom: 20px;
+  font-size: 22px;
+  border-bottom: 2px solid #ff4040;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+.footer-col p {
+  color: #ccc;
+  line-height: 1.8;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-col ul li {
+  margin-bottom: 10px;
+}
+
+.footer-col ul li a {
+  text-decoration: none;
+  color: #ccc;
+  transition: 0.3s;
+}
+
+.footer-col ul li a:hover {
+  color: #ff4040;
+  margin-right: 5px;
+}
+
+.social-links {
+  margin-top: 15px;
+}
+
+.social-links a {
+  display: inline-block;
+  margin-right: 12px;
+  color: #fff;
+  font-size: 18px;
+  transition: 0.3s ease;
+}
+
+.social-links a:hover {
+  color: #ff4040;
+  transform: scale(1.2);
+}
+
+/* معرض الصور */
+.footer-gallery {
+  max-width: 1000px;
+  margin: 50px auto 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  padding: 0 10px;
+}
+
+.footer-gallery img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 10px;
+  transition: 0.4s ease;
+}
+
+.footer-gallery img:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+  cursor: pointer;
+}
+
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid #333;
+  padding-top: 15px;
+  color: #aaa;
+  font-size: 14px;
+  margin-top: 30px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .footer-gallery img {
+    height: 120px;
+  }
+  .footer-col h3 {
+    font-size: 20px;
+  }
+  .footer-col p, .footer-col ul li a {
+    font-size: 15px;
+  }
+}
+/* زر السله العائم =======================================================*/
+#floating-cart {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #ff4500;
+  color: white;
+  font-size: 18px;
+  padding: 12px 18px;
+  border-radius: 50px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* أيقونة السلة */
+#cart-icon {
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+/* كلمة اطلب فوق الزرار */
+#order-text {
+  position: absolute;
+  bottom: 60px; /* فوق الزر */
+  right: 0;
+  left: 0;
+  text-align: center;
+  color: #ff4500;
+  font-weight: bold;
+  opacity: 0;
+  pointer-events: none;
+  font-size: 16px;
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+/* زر الصعود للأعلى =======================================================*/
+
+#scroll-top {
+  position: fixed;
+  bottom: 20px;
+  left: 20px; /* على نفس مستوى زر السلة، مع مسافة 70px تقريبا */
+  background-color: #9F2828;
+  color: white;
+  font-size: 20px;
+  padding: 12px 16px;
+  border-radius: 50px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 1000;
+  display: none; /* مخفي افتراضيا */
+  transition: transform 0.2s;
+}
+
+#scroll-top:hover {
+  transform: scale(1.1);
+  background-color: #e70707;
+  
+}
+
+
+/* ================= LOADER ================= */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: transform 1s ease, opacity 0.8s ease;
+}
+
+#loader.hide {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+.loader-content {
+  text-align: center;
+}
+
+.logo-letters span {
+  display: inline-block;
+  font-size: 55px;
+  font-weight: bold;
+  color: #9F2828;
+  letter-spacing: 12px;
+  opacity: 0;
+  animation: letterIn 1s forwards, neonGlow 1.5s infinite;
+}
+
+.logo-letters span:nth-child(1) { animation-delay: 0s; }
+.logo-letters span:nth-child(2) { animation-delay: 0.3s; }
+.logo-letters span:nth-child(3) { animation-delay: 0.6s; }
+
+.loader-line {
+  margin: 20px auto 0;
+  height: 3px;
+  width: 0;
+  background: #9F2828;
+  animation: lineMove 1.5s infinite;
+}
+
+/* Animations */
+@keyframes letterIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes neonGlow {
+  0% { text-shadow: 0 0 5px #9F2828; }
+  50% { text-shadow: 0 0 20px #9F2828; }
+  100% { text-shadow: 0 0 5px #9F2828; }
+}
+
+@keyframes lineMove {
+  0% { width: 0; }
+  50% { width: 140px; }
+  100% { width: 0; }
+}
+
+/* ================= PAGE ENTER ================= */
+body.loading {
+  overflow: hidden;
+}
+
+.page {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: pageEnter 1s ease forwards;
+  animation-delay: 2.2s;
+}
+
+@keyframes pageEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= NAVBAR LOGO ================= */
+.navbar .logo a {
+  color: #9F2828;
+  font-size: 24px;
+  font-weight: bold;
+  text-decoration: none;
+  animation: logoPulse 3s infinite ease-in-out;
+}
+
+@keyframes logoPulse {
+  0% { text-shadow: 0 0 0; }
+  50% { text-shadow: 0 0 12px #9F2828; }
+  100% { text-shadow: 0 0 0; }
+}
+
+#loader {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+#loader.hide {
+  opacity: 0;
+  transform: scale(1.1);
+  pointer-events: none;
+}
+@keyframes bounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.cart-bounce {
+  animation: bounce 0.4s;
+}
+.section-products {
+  position: relative;
+  overflow: hidden;
+}
+.mouse-light {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(
+    circle,
+    rgba(202, 7, 7, 0.9),
+    transparent 65%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(12px);
+  opacity: 0;
+
+  /* 🔥 ده السر */
+  transform: translate(-50%, -50%);
+}
+/* للـ input */
+/* input {
+  direction: rtl;      
+  text-align: right;   
+}
+
+input::placeholder {
+  direction: rtl;
+  text-align: right;
+} */
+
+/* للـ textarea */
+/* textarea {
+  direction: rtl;
+  text-align: right;
+}
+
+textarea::placeholder {
+  direction: rtl;
+  text-align: right;
+} */
+
+
+/* ===== Why Us Section ===== */
+.why-us {
+  padding: 70px 20px;
+  background: linear-gradient(135deg, #111, #1c1c1c);
+  text-align: center;
+  color: #fff;
+}
+
+.why-us h2 {
+  font-size: 32px;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.why-us h2::after {
+  content: "";
+  width: 80px;
+  height: 4px;
+  background: #9F2828;
+  display: block;
+  margin: 15px auto 0;
+  border-radius: 5px;
+}
+
+/* Features Grid */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 25px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+/* Feature Card */
+.features div {
+  background: #222;
+  padding: 30px 20px;
+  border-radius: 18px;
+  font-size: 18px;
+  font-weight: 500;
+  transition: all 0.35s ease;
+  cursor: default;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Hover Effect */
+.features div:hover {
+  transform: translateY(-10px);
+  background: #9F2828;
+  color: #000;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .why-us h2 {
+    font-size: 26px;
+  }
+
+  .features div {
+    font-size: 16px;
+    padding: 22px;
+  }
+}
+
+
+
+
+.product-actions {
+  display: flex;
+  gap: 10px;          /* مسافة بينهم */
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.buy-btn,
+.colors-btn {
+  padding: 6px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+}
+
+.buy-btn {
+  background: #000;
+  color: #fff;
+}
+
+.colors-btn {
+  background: #9F2828;
+  color: #fff;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.colors-btn:hover {
+  background: #7d1f1f;
+}
+
+
+
+  </style>
+</head>
+
+<body>
+<!-- Loader Component -->
+<div id="loader">
+  <div class="loader-content">
+    <div class="logo-letters">
+      <span>Z</span><span>E</span><span>D</span>
+    </div>
+    <div class="loader-line"></div>
+  </div>
+</div>
+
+
+    <!-- ======= Header / Navbar ======= -->
+<header>
+<nav class="navbar">
+  <div class="logo">
+  <a href="index.html" class="logo-text">
+    <span class="letter">Z</span>
+    <span class="letter">E</span>
+    <span class="letter">D</span>
+  </a>
+</div>
+
+  <ul class="nav-links">
+    <li><a href="#summer">Summer</a></li>
+    <li><a href="#winter">Winter</a></li>
+  </ul>
+<div class="search-bar">
+    <input type="text" id="search-input" placeholder="Search for a product..." />
+    <button id="search-btn">Search</button>
+  </div>
+  
+  <div class="user-actions" id="user-actions">
+    
+    <!-- <a href="shop.html" id="login-link">تسجيل / دخول</a> -->
+    <a href="cart.html">🛒</a>
+    <!-- أيقونة الملف الشخصي تظهر فقط للمستخدم المسجل -->
+    <img id="profile-icon" src="" alt="ملف المستخدم" width="40" height="40" style="border-radius:50%; display:none; cursor:pointer; margin-left:10px;">
+  </div>
+
+  <div class="menu-toggle" id="menu-toggle">☰</div>
+</nav>
+
+</header>
+
+<!-- ======= Mobile Menu ======= -->
+
+<div class="mobile-menu" id="mobile-menu">
+  <div class="close-menu" id="close-menu">✖</div>
+  <ul>
+    <li><a href="#summer">Summer</a></li>
+    <li><a href="#winter">Winter</a></li>
+    <!-- <li><a href="shop.html">تسجيل / دخول</a></li> -->
+    <li><a href="cart.html">🛒 Cart</a></li>
+  </ul>
+</div>
+<!-- ======= Hero Section ======= -->
+<section class="hero">
+  <img src="img/غلاف زيد.jpg" alt="صورة المتجر">
+</section>
+
+
+<section class="hero-phone">
+  <div class="floating-circles"></div>
+
+  <div class="hero-content">
+    <img src="img/phone.png" alt="ZED" class="hero-img">
+
+    <h1 class="hero-name"><span>زيد</span> تالق معانا </h1>
+
+    <p class="hero-whatsapp">
+  <a href="https://wa.me/01204964891" target="_blank">
+    <i class="fa-brands fa-whatsapp"></i>
+    01204964891
+  </a>
+</p>
+
+    <a href="#winter" class="hero-btnn">Explore the Rest</a>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+<!-- زر السلة العائم ---------------------------------------->
+<div id="floating-cart">
+  <span id="cart-icon">🛒</span>
+  <span id="cart-count">0</span>
+  <div id="order-text"> اطلب بقي</div>
+</div>
+
+
+<!-- زر الصعود للأعلى -->
+<div id="scroll-top">UP</div>
+<audio id="scroll-sound" src="img/m2.mp3" preload="auto"></audio>
+
+
+
+
+
+<!-- ======= Slider / Featured Products ======= -->
+
+  <h2 style="text-align:center; margin-bottom:14px;">Our Products</h2>
+
+  <section class="slider" aria-label="سلايدر المنتجات">
+    <div class="slides-container" id="slidesContainer">
+      <!-- 10 منتجات: كل واحدة ملفوفة في رابط يودي لـ product.html?id=X -->
+      <div class="slide">
+        <a><img src="img/leg/1 (3).jpg" alt="منتج 1"></a>
+        <h3>Wide Leg </h3>
+        <p>Price: 500 EGP </p>
+      </div>
+
+      <div class="slide">
+        <a ><img src="img/trng/1 (2).jpg" alt="منتج 2"></a>
+        <h3>Sports Tracksuit </h3>
+        <p>Price: 500 EGP </p>
+      </div>
+
+      <div class="slide">
+        <a ><img src="img/bans/1 (3).jpg" alt="منتج 3"></a>
+        <h3>Sweatpants</h3>
+        <p> Price: 500 EGP</p>
+      </div>
+
+      <div class="slide">
+        <a ><img src="img/soot/1 (6).jpg" alt="منتج 4"></a>
+        <h3>Suit </h3>
+        <p>Price: 999 EGP</p>
+      </div>
+
+      <div class="slide">
+        <a ><img src="img/hody/2 (5).jpg" alt="منتج 5"></a>
+        <h3>Hoodie </h3>
+        <p>Price: 550 EGP</p>
+      </div>
+
+      <div class="slide">
+        <a ><img src="img/kames/1 (4).jpg" alt="منتج 6"></a>
+        <h3> Shirt</h3>
+        <p>Price: 450 EGP</p>
+      </div>
+
+
+      <div class="slide">
+        <a ><img src="img/track/1 (4).jpg" alt="منتج 7"></a>
+        <h3>Sports Track T-shirt </h3>
+        <p>Price: 350 EGP</p>
+      </div>
+
+      <div class="slide">
+        <a><img src="img/track/1 (5).jpg" alt="منتج 8"></a>
+        <h3>Sports Track T-shirt </h3>
+        <p>Price: 350 EGP</p>
+      </div>
+<!-- 
+      <div class="slide">
+        <a href="product.html?id=9"><img src="img/treng4.jpg" alt="منتج 9"></a>
+        <h3>منتج 9</h3>
+        <p>السعر: 320 ج</p>
+      </div>
+
+      <div class="slide">
+        <a href="product.html?id=10"><img src="img/treng5.jpg" alt="منتج 10"></a>
+        <h3>منتج 10</h3>
+        <p>السعر: 210 ج</p>
+      </div>  -->
+
+    </div>
+
+    <button class="prev-slide" aria-label="السابق">&#10094;</button>
+    <button class="next-slide" aria-label="التالي">&#10095;</button>
+  </section>
+
+  <div class="dots" id="dotsContainer"></div>
+
+
+
+
+
+  <!-- ظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظ -->
+
+<section class="section-products" id="winter">
+    <!-- <div class="mouse-light" id="mouseLight"></div> -->
+
+  <h2> Winter Clothing</h2>
+  <div class="products-container">
+
+
+
+
+    <div class="product-card">
+      <img src="img/bans/1 (6).jpg">
+      <h3>Sweatpants </h3>
+      <p class="price">500 EGP</p>
+  <div class="product-actions">
+    <button class="buy-btn">Shop Now</button>
+    <a href="winter/pans.html" class="colors-btn">Color Options</a>
+  </div>
+    </div>
+
+    
+
+    <div class="product-card">
+      <img src="img/hody/2 (5).jpg">
+      <h3>Hoodie  </h3>
+      <p class="price">550 EGP</p>
+
+  <div class="product-actions">
+    <button class="buy-btn">Shop Now</button>
+    <a href="winter/hody.html" class="colors-btn">Color Options</a>
+  </div>
+    </div>
+
+
+
+
+
+<div class="product-card">
+      <img src="img/soot/1 (6).jpg">
+      <h3>Suit </h3>
+      <p class="price">999 EGP</p>
+  <div class="product-actions">
+    <button class="buy-btn">Shop Now</button>
+    <a href="winter/soot.html" class="colors-btn">Color Options</a>
+  </div>
+    </div>
+
+
+    <div class="product-card">
+  <img src="img/track/1 (4).jpg">
+  <h3> Sports Track T-shirt</h3>
+  <p class="price">350 EGP</p>
+
+  <div class="product-actions">
+    <button class="buy-btn">Shop Now</button>
+    <a href="winter/track.html" class="colors-btn">Color Options</a>
+  </div>
+</div>
+
+      
+
+
+    <div class="product-card">
+      <img src="img/kames/1 (1).jpg">
+      <h3>Shirt </h3>
+      <p class="price">450 EGP</p>
+        <div class="product-actions">
+    <button class="buy-btn">Shop Now</button>
+    <a href="winter/kames.html" class="colors-btn">Color Options</a>
+  </div>
+    </div>
+
+
+    
+    <div class="product-card">
+      <img src="img/trng/1 (2).jpg">
+      <h3>Sports Tracksuit </h3>
+      <p class="price">500 EGP</p>
+
+  <div class="product-actions">
+    <button class="buy-btn">Shop Now</button>
+    <a href="winter/trsport.html" class="colors-btn">Color Options</a>
+  </div>
+    </div>
+
+  <div class="product-card">
+  <img src="img/leg/1 (1).jpg">
+  <h3>ًWide Leg </h3>
+  <p class="price">400 EGP</p>
+
+  <div class="product-actions">
+    <button class="buy-btn">Shop Now</button>
+    <a href="winter/waidleg.html" class="colors-btn">Color Options</a>
+  </div>
+</div>
+
+
+
+  
+
+
+
+  </div>
+</section>
+
+
+
+
+
+
+
+<!-- ======= Summer Products Section ======= -->
+
+<section class="section-products" id="summer">
+    <!-- <div class="mouse-light" id="mouseLight"></div> -->
+
+  <h2> Summer Clothing</h2>
+  <div class="products-container">
+    <div class="product-card">
+      <img src="img/ZED-05.jpg">
+      <h3>Stay Tuned for the Summer Collection</h3>
+
+      <!-- <p class="price">250 ج.م</p> -->
+      <button class="buy-btn">Shop Now</button>
+    </div>
+    <div class="product-card">
+      <img src="img/ZED-05.jpg">
+
+      <h3>Stay Tuned for the Summer Collection</h3>
+      <!-- <p class="price">180 ج.م</p> -->
+      <button class="buy-btn">Shop Now</button>
+    </div>
+
+    
+    <div class="product-card">
+      <img src="img/ZED-05.jpg">
+      <h3>Stay Tuned for the Summer Collection</h3>
+
+      <!-- <p class="price">600 ج.م</p> -->
+      <button class="buy-btn">Shop Now</button>
+    </div>
+
+    <div class="product-card">
+      <img src="img/ZED-05.jpg">
+      <h3>Stay Tuned for the Summer Collection</h3>
+
+      <!-- <p class="price">400 ج.م</p> -->
+      <button class="buy-btn">Shop Now</button>
+    </div>
+
+
+
+  </div>
+</section>
+
+<!-- ======= Winter Products Section ======= -->
+ 
+<!-- ======= Best Sellers Section ======= -->
+
+<section class="section-products" id="best-sellers">
+    <div class="mouse-light" id="mouseLight"></div>
+
+  <h2> Best Seller</h2>
+  <div class="products-container">
+    <div class="product-card">
+          <img src="img/track/1 (3).jpg" alt="ترنج رياضي">
+
+      <h3>Sports Track T-shirt  </h3>
+      <p class="price">500 EGP</p>
+      <button class="buy-btn">Shop Now</button>
+    </div>
+
+    <div class="product-card">
+      <img src="img/bans/1 (5).jpg" alt="ترنج رياضي">
+      <h3>Sweatpants </h3>
+      <p class="price">500 EGP</p>
+      <button class="buy-btn">Shop Now</button>
+    </div>
+
+    <div class="product-card">
+      <img src="img/soot/1 (6).jpg" alt="ترنج رياضي">
+
+      <h3>Suit  </h3>
+      <p class="price">999 EGP</p>
+      <button class="buy-btn">Shop Now</button>
+    </div>
+
+    <!-- <div class="product-card">
+      <img src="img/treng4.jpg" alt="ترنج كاجوال">
+      <h3>ترنج كاجوال</h3>
+      <p class="price">300 ج.م</p>
+      <button class="buy-btn">تسوق الآن</button>
+    </div> -->
+  </div>
+</section>
+
+
+
+<!-- ======= Offers Section ======= -->
+<section class="offers">
+  <h2>🔥  Special Offers</h2>
+  <div class="offers-container">
+
+    <!-- <div class="offer-card">
+      <img src="img/treng1.jpg" alt="ترنج رجالي">
+      <div class="offer-info">
+        <h3>شتري خمس قطع واحصل ع الشحن مجاني  </h3>
+        <p><del>400 ج.م</del> <span class="new-price">280 ج.م</span></p>
+        <button class="buy-btn">تسوق الآن</button>
+      </div>
+      <span class="discount">-30%</span>
+    </div> -->
+
+    <div class="offer-card">
+          <img src="img/soot/1 (2).jpg" alt="ترنج رياضي">
+
+      <div class="offer-info">
+        <h3>Buy four items and get a 100 EGP discount </h3>
+        <!-- <p><del>350 ج.م</del> <span class="new-price">245 ج.م</span></p> -->
+        <!-- <button class="buy-btn">تسوق الآن</button> -->
+      </div>
+      <!-- <span class="discount">-30%</span> -->
+    </div>
+
+
+      <div class="offer-card">
+      <img src="img/bans/1 (6).jpg" alt="ترنج رياضي">
+      <div class="offer-info">
+        <h3>Buy three items and get free shipping  </h3>
+        <!-- <p><del>350 ج.م</del> <span class="new-price">245 ج.م</span></p> -->
+        <!-- <button class="buy-btn">تسوق الآن</button> -->
+      </div>
+      <!-- <span class="discount">-30%</span> -->
+    </div>
+
+
+  </div>
+</section>
+
+
+
+<section class="why-us">
+  <h2>Why Choose ZED?</h2>
+  <div class="features">
+    <div>🚚 Fast Shipping to All Governorates</div>
+    <div>💳 Cash on Delivery</div>
+    <div>⭐ High-Quality Materials</div>
+    <div>🔄 Replacement within 14 Days</div>
+  </div>
+</section>
+
+
+<!-- اراء العملاء  -->
+
+  <section class="reviews-section">
+  <h2>Customer Reviews</h2>
+  <div class="carousel-container" id="carousel">
+    <!-- الآراء ستُضاف هنا بواسطة JS -->
+  </div>
+  <div class="carousel-buttons">
+    <button onclick="prevSlide()">&#8592; Previous</button>
+    <button onclick="nextSlide()">Next &#8594;</button>
+  </div>
+</section>
+
+
+
+
+<!-- ======= Contact Section ======= -->
+<section class="contact" id="contact">
+  <div class="contact-container">
+    <h2>Contact Us</h2>
+    <p>: For any inquiries or support requests, you can reach us through the form below or use the contact methods listed below</p>
+
+    <div class="contact-content">
+      <!-- النموذج -->
+      <form id="contactForm">
+        <input type="text" name="from_name" id="name" placeholder="Your Name" required>
+        <input type="email" name="from_email" id="email" placeholder="Your Email" required>
+        <textarea name="message" id="message" rows="5" placeholder="Your Message ..." required></textarea>
+        <button type="submit">Send Message</button>
+      </form>
+
+      <!-- وسائل التواصل -->
+      <div class="contact-info">
+        <h3> : Contact Us via</h3>
+        <p>  Phone:   01204964891  📞</p>
+        <p> zed32910@gmail.com  : Email Address  ✉</p>
+        <p> Address: Alexandria, Egypt 📍</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<!-- ======= Footer Section ======= -->
+
+<footer class="footer">
+  <div class="footer-container">
+
+    <!-- العمود 1 -->
+    <div class="footer-col about">
+      <h3>About the ZED</h3>
+      <p>
+        ZED Store offers the latest fashion trends for men and women with high quality and affordable prices.  
+        Our goal is to make you satisfied with every product you purchase from us 💎
+      </p>
+    </div>
+
+    <!-- العمود 2 -->
+    <div class="footer-col links">
+      <h3>Quick Links</h3>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Our Products</a></li>
+        <li><a href="#">Offers</a></li>
+        <li><a href="#">Contact Us </a></li>
+      </ul>
+    </div>
+
+    <!-- العمود 3 -->
+    <div class="footer-col contact">
+      <h3>Contact Us</h3>
+      <p>📞 01204964891</p>
+      <p>📧 zed32910@gmail.com</p>
+      <div class="social-links">
+        <a href="https://www.facebook.com/share/16by3T4okY/?mibextid=wwXIfr" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="https://www.instagram.com/zed40_4?igsh=MWZ5eGxjMmt4NzAzbQ%3D%3D&utm_source=qr" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+        <a href="https://www.tiktok.com/@zed_805?_r=1&_t=ZS-92N0BYLC7pR" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+
+        <a href="https://wa.me/01204964891" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- قسم الصور -->
+  <div class="footer-gallery">
+    <img src="img/soot/1 (6).jpg" alt="">
+    <img src="img/hody/2 (1).jpg" alt="">
+    <img src="img/track/1 (5).jpg" alt="">
+    <img src="img/bans/1 (3).jpg" alt="">
+    <img src="img/hody/2 (14).jpg" alt="">
+    <img src="img/leg/1 (1).jpg" alt="">
+  </div>
+
+  <div class="footer-bottom">
+  <p>© 2025 ZED Store. All rights reserved.</p>
+
+  </div>
+</footer>
+
+
+
+<!-- مكتبة EmailJS------------------------------------------------------------ -->
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+
+
+<!-- ======= Mobile Menu Toggle ======================================================== -->
+<script>
+// فتح وقفل المينيو
+document.getElementById('menu-toggle').onclick = () =>
+  document.getElementById('mobile-menu').classList.add('active');
+
+document.getElementById('close-menu').onclick = () =>
+  document.getElementById('mobile-menu').classList.remove('active');
+
+// قفل المينيو لما اضغط على أي لينك جواه
+document.querySelectorAll('#mobile-menu a').forEach(link => {
+  link.addEventListener('click', () => {
+    document.getElementById('mobile-menu').classList.remove('active');
+  });
+});
+
+
+/* ======= زر "تسوق الآن" ======= */
+
+document.querySelectorAll(".buy-btn").forEach((button) => {
+  button.addEventListener("click", () => {
+    const card = button.closest(".product-card, .offer-card");
+    const name = card.querySelector("h3").textContent.trim();
+    const priceText = card.querySelector(".price, .new-price").textContent.trim();
+    const image = card.querySelector("img").getAttribute("src");
+    const numericPrice = parseFloat(priceText.replace(/[^0-9.]/g, ""));
+    if (isNaN(numericPrice)) return;
+    addToCart({ name, price: numericPrice, image });
+  });
+});
+
+/* ======= البحث الديناميكي ========================================================================= */
+
+const searchInput = document.getElementById("search-input");
+const searchBtn = document.getElementById("search-btn");
+const summerProducts = document.querySelectorAll("#summer .product-card");
+const winterProducts = document.querySelectorAll("#winter .product-card");
+
+function filterProducts() {
+  const query = searchInput.value.trim().toLowerCase();
+  let foundSection = null;
+
+  summerProducts.forEach((card) => {
+    const name = card.querySelector("h3").textContent.toLowerCase();
+    if (name.includes(query)) {
+      card.style.display = "block";
+      foundSection = document.getElementById("summer");
+    } else {
+      card.style.display = "none";
+    }
+  });
+
+  winterProducts.forEach((card) => {
+    const name = card.querySelector("h3").textContent.toLowerCase();
+    if (name.includes(query)) {
+      card.style.display = "block";
+      foundSection = document.getElementById("winter");
+    } else {
+      card.style.display = "none";
+    }
+  });
+
+  return foundSection;
+}
+
+searchInput.addEventListener("input", filterProducts);
+searchBtn.addEventListener("click", () => {
+  const section = filterProducts();
+  if (section) section.scrollIntoView({ behavior: "smooth" });
+  else alert("لم يتم العثور على المنتج!");
+});
+
+/* ======= سلايدر الصور =============================================================================== */
+const slidesContainer = document.querySelector(".slides-container");
+const slides = document.querySelectorAll(".slide");
+const totalSlides = slides.length;
+const nextBtn = document.querySelector(".next-slide");
+const prevBtn = document.querySelector(".prev-slide");
+let currentIndex = 0;
+let autoTimer = null;
+
+function getSlidesPerView() {
+  const w = window.innerWidth;
+  if (w >= 992) return 4;
+  if (w >= 768) return 3;
+  return 2;
+}
+
+function updateSlider() {
+  const slideWidth = slides[0].clientWidth;
+  slidesContainer.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+  updateDots();
+}
+
+const dotsContainer = document.getElementById("dotsContainer");
+if (dotsContainer) {
+  for (let i = 0; i < totalSlides; i++) {
+    const d = document.createElement("span");
+    d.classList.add("dot");
+    if (i === 0) d.classList.add("active");
+    d.dataset.index = i;
+    dotsContainer.appendChild(d);
+    d.addEventListener("click", () => {
+      currentIndex = Math.min(i, totalSlides - getSlidesPerView());
+      updateSlider();
+      resetAuto();
+    });
+  }
+}
+
+
+
+function updateDots() {
+  const dots = document.querySelectorAll(".dot");
+  dots.forEach((dot) => dot.classList.remove("active"));
+  const activeDotIndex = Math.min(currentIndex, totalSlides - 1);
+  if (dots[activeDotIndex]) dots[activeDotIndex].classList.add("active");
+}
+
+nextBtn.addEventListener("click", () => {
+  const spv = getSlidesPerView();
+  if (currentIndex < totalSlides - spv) currentIndex++;
+  else currentIndex = 0;
+  updateSlider();
+  resetAuto();
+});
+
+prevBtn.addEventListener("click", () => {
+  const spv = getSlidesPerView();
+  if (currentIndex > 0) currentIndex--;
+  else currentIndex = totalSlides - spv;
+  updateSlider();
+  resetAuto();
+});
+
+function startAuto() {
+  stopAuto();
+  autoTimer = setInterval(() => {
+    const spv = getSlidesPerView();
+    if (currentIndex < totalSlides - spv) currentIndex++;
+    else currentIndex = 0;
+    updateSlider();
+  }, 5000);
+}
+function stopAuto() {
+  if (autoTimer) clearInterval(autoTimer);
+  autoTimer = null;
+}
+function resetAuto() {
+  stopAuto();
+  startAuto();
+}
+
+window.addEventListener("resize", () => {
+  const spv = getSlidesPerView();
+  if (currentIndex > totalSlides - spv)
+    currentIndex = Math.max(0, totalSlides - spv);
+  updateSlider();
+});
+
+window.addEventListener("load", () => {
+  updateSlider();
+  startAuto();
+});
+
+
+/* ======= EmailJS للتواصل ================================================================== */
+
+  (function(){
+    emailjs.init("3vD9YZI7HjdTW1Mnm"); // Public Key
+  })();
+
+  document.getElementById("contactForm").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    emailjs.sendForm('service_hy1sy6f', 'template_04dcrxg', this)
+      .then(function() {
+        alert("تم إرسال رسالتك بنجاح! شكراً لتواصلك معنا.");
+        document.getElementById("contactForm").reset();
+      }, function(error) {
+        console.log('FAILED...', error);
+        alert("حدث خطأ، لم يتم إرسال الرسالة. حاول مرة أخرى.");
+      });
+  });
+  
+  //////////////////////////////////////////////////////// تحديث عدد المنتجات في الزر العائم
+function updateCartCount() {
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  document.getElementById('cart-count').textContent = cart.length;
+}
+
+// فتح صفحة السلة عند الضغط
+document.getElementById('floating-cart').addEventListener('click', () => {
+  window.location.href = 'cart.html';
+});
+const cartIcon = document.getElementById('cart-icon');
+const orderText = document.getElementById('order-text');
+
+setInterval(() => {
+  // اهتزاز الأيقونة
+  cartIcon.style.transform = 'translateX(-5px)';
+  setTimeout(() => {
+    cartIcon.style.transform = 'translateX(5px)';
+    setTimeout(() => {
+      cartIcon.style.transform = 'translateX(0)';
+    }, 100);
+  }, 100);
+
+  // ظهور كلمة "اطلب"
+  orderText.style.opacity = 1;
+  orderText.style.transform = 'translateY(-10px)';
+  setTimeout(() => {
+    orderText.style.opacity = 0;
+    orderText.style.transform = 'translateY(0)';
+  }, 1000); // تظهر لمدة ثانية
+}, 3000); // كل 3 ثواني
+
+
+// حدث إضافة منتج للسلة لتحديث العدد مباشرة
+
+function addToCart(product) {
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const cartItem = {
+    name: product.name || "منتج غير معروف",
+    price: parseFloat(product.price) || 0,
+    image: product.image || "placeholder.png",
+    quantity: 1,
+    color: "أسود",
+    size: "M",
+  };
+  cart.push(cartItem);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartCount();
+showToast(`🛒 تمت إضافة "${cartItem.name}" إلى السلة`, "success");
+
+}
+
+// تهيئة العدد عند تحميل الصفحة
+window.addEventListener('load', updateCartCount);
+
+
+/* ======= زر الصعود للأعلى ======================================================= */
+const scrollTopBtn = document.getElementById('scroll-top');
+const scrollSound = document.getElementById('scroll-sound');
+
+// إظهار الزر بعد التمرير
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 200) {
+    scrollTopBtn.style.display = 'flex';
+  } else {
+    scrollTopBtn.style.display = 'none';
+  }
+});
+
+// عند الضغط، الصعود + صوت
+scrollTopBtn.addEventListener('click', () => {
+  // تشغيل الصوت
+  if (scrollSound) {
+    scrollSound.currentTime = 0; // يعيد الصوت من الأول
+    scrollSound.volume = 0.4;
+    scrollSound.play().catch(() => {});
+  }
+
+  // الصعود للأعلى
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+});
+// اراء العملاء - Carousel
+
+let reviews = [];
+let startIndex = 0;
+let visibleCount = window.innerWidth > 1024 ? 4 : 1;
+const container = document.getElementById('carousel');
+
+// قراءة JSON
+fetch('reviews.json')
+  .then(response => response.json())
+  .then(data => {
+    reviews = data;
+    renderCarousel();
+    setInterval(nextSlide, 3000); // تغيير تلقائي كل 3 ثواني
+  })
+  .catch(err => console.error('خطأ في قراءة JSON:', err));
+
+// تحديث العرض حسب حجم الشاشة
+window.addEventListener('resize', () => {
+  visibleCount = window.innerWidth > 1024 ? 4 : 1;
+  renderCarousel();
+});
+
+function renderCarousel() {
+  container.innerHTML = "";
+  for (let i = 0; i < visibleCount; i++) {
+    const review = reviews[(startIndex + i) % reviews.length];
+    const card = document.createElement("div");
+    card.className = "review-card";
+    card.innerHTML = `
+      <div class="review-header">
+        <i class="fas fa-user-circle avatar"></i>
+        <h3>${review.name}</h3>
+      </div>
+      <p>${review.comment}</p>
+      <div class="stars">${"★".repeat(review.stars)}${"☆".repeat(5 - review.stars)}</div>
+    `;
+    container.appendChild(card);
+  }
+}
+
+// أزرار التنقل
+function nextSlide() {
+  startIndex = (startIndex + 1) % reviews.length;
+  renderCarousel();
+}
+
+function prevSlide() {
+  startIndex = (startIndex - 1 + reviews.length) % reviews.length;
+  renderCarousel();
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  // إنشاء عميل Supabase
+  const supabaseUrl = "https://ywbjijfivsihjulypbft.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl3YmppamZpdnNpaGp1bHlwYmZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4MDc1OTAsImV4cCI6MjA3ODM4MzU5MH0.gxR-f3mY0DrcmzNT5CJVupHBjeV7A2TlEkuymyqSwz8";
+  // const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+  const profileIcon = document.getElementById('profile-icon');
+  const profileModal = document.getElementById('profile-modal');
+  const closeModal = document.getElementById('close-modal');
+  const profileAvatar = document.getElementById('profile-avatar');
+  const profileUsername = document.getElementById('profile-username');
+  const profileOrders = document.getElementById('profile-orders');
+  const avatarUpload = document.getElementById('avatar-upload');
+  const loginLink = document.getElementById('login-link');
+
+  // تفعيل الـ menu toggle بدون مشاكل
+  const menuToggle = document.getElementById('menu-toggle');
+  const navLinks = document.querySelector('.nav-links');
+  menuToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+  });
+
+
+  // فتح نافذة الملف الشخصي عند الضغط على الأيقونة
+  profileIcon.addEventListener('click', () => {
+    profileModal.style.display = 'block';
+  });
+  });
+
+
+
+</script>
+
+
+<script>
+
+function showToast(message, type = "success") {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.className = `toast show ${type}`;
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000);
+}
+
+</script>
+<script>
+document.body.classList.add("loading");
+
+const sound = document.getElementById("loader-sound");
+const loader = document.getElementById("loader");
+
+const startLoader = () => {
+  sound.volume = 0.4;
+  sound.play().catch(() => {});
+  document.removeEventListener("click", startLoader);
+};
+
+document.addEventListener("click", startLoader);
+
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    loader.classList.add("hide");
+    document.body.classList.remove("loading");
+  }, 2000);
+});
+const section = document.querySelector('#best-sellers');
+const light = document.getElementById('mouseLight');
+
+let mouseX = 0, mouseY = 0;
+let lightX = 0, lightY = 0;
+
+const smoothness = 0.12; // كل ما أقل = أسلس
+
+section.addEventListener('mousemove', (e) => {
+  const rect = section.getBoundingClientRect();
+  mouseX = e.clientX - rect.left;
+  mouseY = e.clientY - rect.top;
+});
+
+section.addEventListener('mouseenter', () => {
+  light.style.opacity = '1';
+});
+
+section.addEventListener('mouseleave', () => {
+  light.style.opacity = '0';
+});
+
+function animate() {
+  lightX += (mouseX - lightX) * smoothness;
+  lightY += (mouseY - lightY) * smoothness;
+
+  // 👇 نحطها مباشرة على الماوس
+  light.style.left = `${lightX}px`;
+  light.style.top  = `${lightY}px`;
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+
+</script>
+
+<script>
+const circlesWrapper = document.querySelector(".floating-circles");
+
+function createCircle() {
+  const circle = document.createElement("span");
+  circle.classList.add("circle");
+
+  // حجم أكبر
+  const size = Math.random() * 5 + 2; // من 25px لـ 75px
+  const left = Math.random() * 100;
+
+  // مدة أطول عشان الحركة تبقى ناعمة
+  const duration = Math.random() * 12 + 10; // من 10 لـ 22 ثانية
+
+  // تمايل يمين وشمال
+  const drift = (Math.random() * 200 - 100) + "px";
+
+  circle.style.width = size + "px";
+  circle.style.height = size + "px";
+  circle.style.left = left + "%";
+  circle.style.animationDuration = duration + "s";
+  circle.style.setProperty("--drift", drift);
+
+  circlesWrapper.appendChild(circle);
+
+  setTimeout(() => {
+    circle.remove();
+  }, duration * 1000);
+}
+
+// عدد أكتر (كل 200ms)
+setInterval(createCircle, 200);
+</script>
+
+
+
+
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+</body>
+</html>
